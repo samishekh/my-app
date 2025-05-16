@@ -1,7 +1,5 @@
 from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
-import json
-import os
 
 DB_user_name = 'python_user'
 DB_pass = 'password123'
@@ -20,7 +18,6 @@ class Task(db.Model):
     due_date = db.Column(db.DateTime, nullable=True)
     done = db.Column(db.Boolean, default=False, nullable=False)
 
-# Initialize the database
 with app.app_context():
     db.create_all()
 
@@ -42,21 +39,17 @@ def calc(input=False):
         if "task" in request.form and "deadline" in request.form:
             task = request.form["task"]
             deadline = request.form["deadline"]
-            #dic[task] = {"deadline": deadline, "done": False}
             new_task = Task(name = task, due_date=deadline)
             db.session.add(new_task)
             db.session.commit()
         elif "delete" in request.form:
             task = request.form["delete"]
-            #del dic[task]
             task_to_del = Task.query.filter(Task.name == task).first()
-            print(task_to_del.name)
             if task_to_del:
                 db.session.delete(task_to_del)
                 db.session.commit()
         elif "done" in request.form:
             task = request.form["done"]
-            #dic[task]["done"] = True
             done_task = Task.query.filter(Task.name == task).first()
             if done_task:
                 done_task.done = True
